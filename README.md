@@ -1,3 +1,6 @@
+> Repositorio migrado desde `github.com/literato1987`, cuenta anterior del mismo autor,
+> sin acceso desde agosto de 2026. El historial de commits se conserva íntegro.
+
 # ⚡ Matriculaciones EV España
 
 *Dashboard interactivo para seguir la adopción del vehículo eléctrico en España — datos oficiales de la DGT*
