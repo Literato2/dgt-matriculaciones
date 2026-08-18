@@ -14,6 +14,7 @@ Requisitos:
 import re
 import sys
 import unicodedata
+from calendar import monthrange
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -402,11 +403,13 @@ with st.sidebar:
     st.header("Filtros")
 
     hoy = date.today()
-    # Por defecto: los 2 últimos meses completos
-    _primer_dia_mes_actual = hoy.replace(day=1)
-    _default_fin = _primer_dia_mes_actual - timedelta(days=1)          # último día del mes anterior
-    _default_inicio = _default_fin.replace(day=1) - timedelta(days=1)  # último día de hace 2 meses
-    _default_inicio = _default_inicio.replace(day=1)                   # primer día de hace 2 meses
+    # Por defecto: los 2 últimos meses completos + el mes en curso. El mes en
+    # curso está incompleto por definición, así que las gráficas de evolución lo
+    # etiquetan como "(parcial)" — ver _etiquetas_periodo — para que su barra
+    # más baja no se lea como una caída de matriculaciones.
+    _fin_mes_anterior = hoy.replace(day=1) - timedelta(days=1)
+    _default_inicio = (_fin_mes_anterior.replace(day=1) - timedelta(days=1)).replace(day=1)
+    _default_fin = hoy
 
     fecha_inicio = st.date_input(
         "Fecha inicio",
@@ -528,6 +531,42 @@ def _periodo_sql(agrupacion: str) -> str:
             return ("strftime('%Y', fecha) || '-Q' || "
                     "CAST(((CAST(strftime('%m', fecha) AS INTEGER) - 1) / 3 + 1) AS TEXT)")
         return "strftime('%Y-%m', fecha)"
+
+
+def _fin_de_periodo(clave: str, agrupacion: str) -> date:
+    """Último día natural del periodo: "2026-08" -> 31/08, "2026-Q3" -> 30/09, "2026" -> 31/12."""
+    if agrupacion == "Año":
+        return date(int(clave), 12, 31)
+    if agrupacion == "Trimestre":
+        anio, trimestre = clave.split("-Q")
+        mes = int(trimestre) * 3
+    else:
+        anio, mes = clave.split("-")
+    anio, mes = int(anio), int(mes)
+    return date(anio, mes, monthrange(anio, mes)[1])
+
+
+def _es_parcial(clave, agrupacion: str) -> bool:
+    """True si el rango del filtro corta este periodo antes de que termine."""
+    return _fin_de_periodo(str(clave), agrupacion) > fecha_fin
+
+
+def _etiquetas_periodo(claves, agrupacion: str) -> list:
+    """Etiquetas del eje X marcando los periodos incompletos."""
+    return [
+        f"{c} (parcial)" if _es_parcial(c, agrupacion) else str(c)
+        for c in claves
+    ]
+
+
+def _aviso_parcial(claves, agrupacion: str) -> None:
+    """Nota bajo la gráfica cuando algún periodo está cortado por el rango."""
+    if any(_es_parcial(c, agrupacion) for c in claves):
+        st.caption(
+            "Los periodos marcados **(parcial)** no están completos: el rango de fechas "
+            "los corta antes de que terminen, así que sus cifras no son comparables con "
+            "las de los periodos cerrados."
+        )
 
 if not CLOUD:
     # cod_tipo_list para query_registros (None = sin filtro de tipo)
@@ -899,12 +938,13 @@ with tab2:
             st.info("No hay datos para la selección.")
         else:
             df_pivot = df_evol.pivot(index="periodo", columns="modelo", values="n").fillna(0)
+            _x_evol = _etiquetas_periodo(df_pivot.index, agrupacion)
 
             fig_evol = go.Figure()
             for i, modelo in enumerate(df_pivot.columns):
                 color = _TREEMAP_COLORS[i % len(_TREEMAP_COLORS)]
                 fig_evol.add_trace(go.Bar(
-                    x=df_pivot.index.tolist(),
+                    x=_x_evol,
                     y=df_pivot[modelo].tolist(),
                     name=modelo,
                     marker_color=color,
@@ -936,6 +976,7 @@ with tab2:
                 margin=dict(t=60, b=80, l=60, r=20),
             )
             st.plotly_chart(fig_evol, use_container_width=True)
+            _aviso_parcial(df_pivot.index, agrupacion)
 
 # ── TAB 3: BEV Share ───────────────────────────────────────────────────────
 with tab3:
@@ -1000,7 +1041,7 @@ with tab3:
         df_agg["total"] = df_agg["BEV"] + df_agg["No-EV"]
         df_agg["bev_pct"] = df_agg["BEV"] / df_agg["total"].replace(0, 1) * 100
 
-        periodos = df_agg.index.tolist()
+        periodos = _etiquetas_periodo(df_agg.index, agrupacion_share)
 
         fig_share = go.Figure()
 
@@ -1063,6 +1104,7 @@ with tab3:
             margin=dict(t=60, b=100, l=60, r=60),
         )
         st.plotly_chart(fig_share, use_container_width=True)
+        _aviso_parcial(df_agg.index, agrupacion_share)
 
         # Tabla resumen por período
         with st.expander("Ver datos"):
@@ -1280,11 +1322,13 @@ with tab4:
                     .fillna(0)
                 )
 
+                _x_ccaa = _etiquetas_periodo(df_evol_pivot.index, agrupacion_ccaa)
+
                 fig_ccaa = go.Figure()
                 for i, ccaa in enumerate(df_evol_pivot.columns):
                     color = _TREEMAP_COLORS[i % len(_TREEMAP_COLORS)]
                     fig_ccaa.add_trace(go.Bar(
-                        x=df_evol_pivot.index.tolist(),
+                        x=_x_ccaa,
                         y=df_evol_pivot[ccaa].round(2).tolist(),
                         name=ccaa,
                         marker_color=color,
@@ -1322,6 +1366,7 @@ with tab4:
                     margin=dict(t=60, b=100, l=60, r=20),
                 )
                 st.plotly_chart(fig_ccaa, use_container_width=True)
+                _aviso_parcial(df_evol_pivot.index, agrupacion_ccaa)
 
 # ── TAB 5: Acerca de ───────────────────────────────────────────────────────
 with tab5:
