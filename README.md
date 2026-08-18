@@ -6,7 +6,7 @@
 
 *Dashboard interactivo para seguir la adopción del vehículo eléctrico en España — datos oficiales de la DGT*
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://matriculaciones-dgt.streamlit.app)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://matriculaciones-ev-espana.streamlit.app)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
 [![Licencia MIT](https://img.shields.io/badge/licencia-MIT-green.svg)](LICENSE)
 [![Datos actualizados](https://img.shields.io/badge/datos-actualizaci%C3%B3n%20diaria-brightgreen.svg)](https://github.com/Literato2/dgt-matriculaciones/releases)
