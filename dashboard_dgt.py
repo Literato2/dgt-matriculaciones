@@ -957,6 +957,7 @@ with tab2:
                     font=dict(size=14, color=TEXT), x=0.01,
                 ),
                 xaxis=dict(
+                    type="category",
                     title=_titulo_periodo,
                     tickfont=dict(color=TEXT, size=10),
                     titlefont=dict(color=TEXT),
@@ -1071,6 +1072,7 @@ with tab3:
                 font=dict(size=14, color=TEXT), x=0.01,
             ),
             xaxis=dict(
+                type="category",
                 title=_titulo_share,
                 tickfont=dict(color=TEXT, size=10),
                 titlefont=dict(color=TEXT),
@@ -1341,6 +1343,7 @@ with tab4:
                         font=dict(size=14, color=TEXT), x=0.01,
                     ),
                     xaxis=dict(
+                        type="category",
                         title=agrupacion_ccaa,
                         tickfont=dict(color=TEXT, size=10),
                         titlefont=dict(color=TEXT),
