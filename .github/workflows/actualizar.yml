@@ -9,18 +9,16 @@ jobs:
   actualizar:
     runs-on: ubuntu-latest
     permissions:
-      contents: write       # necesario para subir assets a releases
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      contents: write       # necesario para subir assets a releases y commitear el manifiesto
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
           cache: pip
@@ -28,9 +26,13 @@ jobs:
       - name: Instalar dependencias
         run: pip install -r requirements.txt
 
+      # `set +e` es imprescindible: el shell corre con -e, así que un exit != 0
+      # abortaría el step antes de registrar exit_code y los steps siguientes
+      # no sabrían distinguir "sin datos nuevos" (2) de un error real.
       - name: Actualizar DB cloud
         id: update
         run: |
+          set +e
           python update_cloud_db.py --meses 3
           echo "exit_code=$?" >> $GITHUB_OUTPUT
         continue-on-error: true
@@ -42,6 +44,18 @@ jobs:
           echo "DB subida correctamente"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # El commit diario mantiene vivo el cron: GitHub deshabilita los workflows
+      # programados tras 60 dias sin actividad en el repo, y escribir en una
+      # release no cuenta como actividad.
+      - name: Commitear manifiesto de última actualización
+        if: steps.update.outputs.exit_code == '0' || steps.update.outputs.exit_code == '2'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add datos/ultima-actualizacion.json
+          git diff --quiet --cached || git commit -m "chore: datos actualizados $(date -u +%Y-%m-%d)"
+          git push
 
       - name: Sin cambios nuevos
         if: steps.update.outputs.exit_code == '2'

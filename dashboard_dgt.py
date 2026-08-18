@@ -354,7 +354,7 @@ st.caption("Datos oficiales DGT · Actualizado con caché local SQLite · Fuente
 
 # ── Inicializar DB (local o cloud) ─────────────────────────────────────────
 _CLOUD_DB_URL = (
-    "https://github.com/literato1987/dgt-matriculaciones"
+    "https://github.com/Literato2/dgt-matriculaciones"
     "/releases/download/v1.0.0/datos_dgt_cloud.db"
 )
 
@@ -1373,13 +1373,13 @@ Las contribuciones son bienvenidas:
 en los datos de la DGT no es trivial — los códigos de propulsión tienen inconsistencias históricas.
 Si conoces bien esta clasificación y quieres mejorar el gráfico de cuotas, abre un issue o un PR.
 
-Código en [github.com/literato1987/dgt-matriculaciones](https://github.com/literato1987/dgt-matriculaciones)
+Código en [github.com/Literato2/dgt-matriculaciones](https://github.com/Literato2/dgt-matriculaciones)
 
 ---
 
 #### Créditos
 
-**Creado por** Juan Clavel — [@rote_nelke](https://x.com/rote_nelke) en X · [@literato1987](https://github.com/literato1987) en GitHub
+**Creado por** Juan Clavel — [@rote_nelke](https://x.com/rote_nelke) en X · [@Literato2](https://github.com/Literato2) en GitHub
 
 **Inspiración original**: [Luis Valdés](https://bsky.app/profile/luisvaldes.bsky.social) · canal [Todos Eléctricos](https://x.com/todoselectricos) — sus análisis semanales de ventas demostraron que había demanda real para estos datos.
 

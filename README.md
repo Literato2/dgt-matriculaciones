@@ -1,14 +1,15 @@
 > Repositorio migrado desde `github.com/literato1987`, cuenta anterior del mismo autor,
-> sin acceso desde agosto de 2026. El historial de commits se conserva íntegro.
+> sin acceso desde agosto de 2026. El historial de commits se conserva íntegro y este
+> repositorio es autónomo: la base de datos y la actualización diaria viven aquí.
 
 # ⚡ Matriculaciones EV España
 
 *Dashboard interactivo para seguir la adopción del vehículo eléctrico en España — datos oficiales de la DGT*
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://literato1987-dgt-matriculaciones.streamlit.app)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://matriculaciones-dgt.streamlit.app)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
 [![Licencia MIT](https://img.shields.io/badge/licencia-MIT-green.svg)](LICENSE)
-[![Datos actualizados](https://img.shields.io/badge/datos-actualizaci%C3%B3n%20diaria-brightgreen.svg)](https://github.com/literato1987/dgt-matriculaciones/releases)
+[![Datos actualizados](https://img.shields.io/badge/datos-actualizaci%C3%B3n%20diaria-brightgreen.svg)](https://github.com/Literato2/dgt-matriculaciones/releases)
 
 <!-- screenshot -->
 > *Captura del dashboard — próximamente*
@@ -69,7 +70,7 @@ Tú, explorando los datos ⚡
 ## Instalación local
 
 ```bash
-git clone https://github.com/literato1987/dgt-matriculaciones.git
+git clone https://github.com/Literato2/dgt-matriculaciones.git
 cd dgt-matriculaciones
 pip install -r requirements.txt
 streamlit run dashboard_dgt.py
@@ -99,7 +100,7 @@ Todos los colaboradores aparecen en este README con enlace a su perfil.
 
 ## Créditos e inspiración
 
-**Creado por** Juan Clavel — [@rote_nelke](https://x.com/rote_nelke) en X · [@literato1987](https://github.com/literato1987) en GitHub
+**Creado por** Juan Clavel — [@rote_nelke](https://x.com/rote_nelke) en X · [@Literato2](https://github.com/Literato2) en GitHub
 
 **Inspiración original**: [Luis Valdés](https://bsky.app/profile/luisvaldes.bsky.social) en el canal [Todos Eléctricos](https://x.com/todoselectricos) — sus análisis semanales de ventas demostraron que había una comunidad que seguía estos datos con atención.
 
