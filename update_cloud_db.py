@@ -15,6 +15,7 @@ Uso local:
     python update_cloud_db.py --meses 6  # últimos 6 meses
 """
 
+import json
 import sqlite3
 import sys
 import requests
@@ -31,8 +32,9 @@ from dgt_matriculaciones import (
 )
 
 DST_PATH = Path(__file__).parent / "datos_dgt_cloud.db"
+META_PATH = Path(__file__).parent / "datos" / "ultima-actualizacion.json"
 RELEASE_URL = (
-    "https://github.com/literato1987/dgt-matriculaciones"
+    "https://github.com/Literato2/dgt-matriculaciones"
     "/releases/download/v1.0.0/datos_dgt_cloud.db"
 )
 
@@ -183,7 +185,27 @@ def actualizar(n_meses: int = 3):
     dst_mb = DST_PATH.stat().st_size / 1e6
     print(f"\nActualizado: {DST_PATH} ({dst_mb:.1f} MB)")
     print(f"Rango: {fecha_min} -> {fecha_max}")
+
+    _escribir_manifiesto(fecha_min, fecha_max, total_filas, dst_mb)
     return total_filas > 0
+
+
+def _escribir_manifiesto(fecha_min, fecha_max, total_filas, dst_mb):
+    """Deja constancia en el repo de la última actualización.
+
+    Además de dar al dashboard una fecha fiable sin abrir la DB, el commit diario
+    de este fichero cuenta como actividad del repositorio: GitHub deshabilita los
+    workflows programados tras 60 dias sin ella.
+    """
+    META_PATH.parent.mkdir(exist_ok=True)
+    META_PATH.write_text(json.dumps({
+        "actualizado_en": datetime.now().isoformat(timespec="seconds"),
+        "fecha_min": fecha_min,
+        "fecha_max": fecha_max,
+        "filas_actualizadas": total_filas,
+        "tamano_db_mb": round(dst_mb, 1),
+    }, indent=2, ensure_ascii=False) + "\n")
+    print(f"Manifiesto: {META_PATH}")
 
 
 if __name__ == "__main__":
